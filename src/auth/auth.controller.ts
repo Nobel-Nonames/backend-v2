@@ -1,4 +1,4 @@
-import { Body, Controller, ForbiddenException, Get, Headers, HttpCode, HttpStatus, InternalServerErrorException, Post, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Get, Headers, HttpCode, HttpStatus, InternalServerErrorException, Post, Query, UnauthorizedException, UseGuards } from '@nestjs/common';
 import SignInRequestDto from './dto/request/SignInRequest.dto';
 import { AuthService } from './auth.service';
 import SignUpRequestDto from './dto/request/SignUpRequest.dto';
@@ -7,7 +7,10 @@ import { ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestj
 import SignInResponseDto from './dto/response/SignInResponse.dto';
 import SuccessResponseDto from '../dto/success.dto';
 import { AuthGuard } from './auth.guard';
-import MeResponseDto from './dto/response/meResponse.dto';
+import GetUsersResponseDto from './dto/response/GetUsersResponse.dto';
+import GetUsersRequestDto from './dto/request/GetUsersRequest.dto';
+import GetUserResponseDto from './dto/response/GetUserResponse.dto';
+import GetUserRequestDto from './dto/request/GetUserRequest.dto';
 
 @Controller('auth')
 @ApiTags('유저 API')
@@ -24,7 +27,7 @@ export class AuthController {
     if (user === null) throw new UnauthorizedException({ success: false, message: '아이디 혹은 비밀번호를 확인해주세요.' });
     else {
       if (user.password === hash(body.password + user.salt)) {
-        return this.authService.createToken(user.id);
+        return this.authService.createToken(user.uuid);
       } else throw new UnauthorizedException({ success: false, message: '아이디 혹은 비밀번호를 확인해주세요.' });
     }
   }
@@ -49,7 +52,7 @@ export class AuthController {
 
   @Get('/@me')
   @ApiOperation({ summary: '@me', description: '내 정보 가져오기' })
-  @ApiOkResponse({ description: '자신의 정보', type: MeResponseDto })
+  @ApiOkResponse({ description: '자신의 정보', type: GetUserResponseDto })
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   async Me(@Headers("Authorization") token: string) {
@@ -58,11 +61,64 @@ export class AuthController {
     const user = await this.authService.findOneById(verify.payload.id)
 
     const format = {
-      ...user.toJSON(),
+      ...user,
       password: undefined,
       salt: undefined
     };
 
     return { success: true, user: format }
+  }
+
+  @Get('/user')
+  @ApiOperation({ summary: 'get user', description: '유저 데이터를 가져옵니다.' })
+  @ApiOkResponse({ description: 'get user Response', type: GetUserResponseDto })
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async getUser(
+    @Query() dto: GetUserRequestDto,
+    @Headers("Authorization") token: string
+  ) {
+    const verify = await this.authService.verifyToken(token);
+    if (!verify) throw new UnauthorizedException({ success: false, message: '비 정상적인 토큰 입니다.' })
+    const me = await this.authService.findOneById(verify.payload.id)
+
+    if (me.type === "user")
+      throw new UnauthorizedException({ success: false, message: 'user 권한의 유저는 다른 유저의 정보를 확인할 수 없습니다.' })
+
+    const user = await this.authService.findOneById(dto.uuid)
+    const format = {
+      ...user,
+      password: undefined,
+      salt: undefined
+    }
+
+    return { success: true, user: format }
+  }
+
+  @Get('/users')
+  @ApiOperation({ summary: 'get users', description: '유저들 데이터를 가져옵니다.' })
+  @ApiOkResponse({ description: 'get users Response', type: GetUsersResponseDto })
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async GetUsers(
+    @Query() dto: GetUsersRequestDto,
+    @Headers("Authorization") token: string
+  ) {
+    const verify = await this.authService.verifyToken(token);
+    if (!verify) throw new UnauthorizedException({ success: false, message: '비 정상적인 토큰 입니다.' })
+    const user = await this.authService.findOneById(verify.payload.id)
+
+    if (user.type === "user")
+      throw new UnauthorizedException({ success: false, message: 'user 권한의 유저는 다른 유저의 정보를 확인할 수 없습니다.' })
+    const users = await this.authService.findByUsersPaginationAndType(dto.page, dto.type)
+    const format = users.map((value) => {
+      return {
+        ...value,
+        password: undefined,
+        salt: undefined
+      }
+    })
+
+    return { success: true, users: format }
   }
 }

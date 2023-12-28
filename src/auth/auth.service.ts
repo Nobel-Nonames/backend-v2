@@ -3,17 +3,16 @@ import { JwtService } from '@nestjs/jwt';
 import getRandom from 'src/utils/getRandom';
 import hash from 'src/utils/hash';
 import { ConfigService } from '@nestjs/config';
-import { InjectModel } from '@nestjs/mongoose';
-import User from 'src/schemas/auth/user.schema';
-import { Model } from 'mongoose';
-import * as fs from 'fs'
 import fileSystem from 'src/utils/fileSystem';
+import { InjectRepository } from '@nestjs/typeorm';
+import UsersEntity from 'src/entitiy/auth/user.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(User.name)
-    private userModel: Model<User>,
+    @InjectRepository(UsersEntity)
+    private userRepository: Repository<UsersEntity>,
     private jwtService: JwtService,
     private configService: ConfigService
   ) { }
@@ -32,8 +31,8 @@ export class AuthService {
    * @returns Repository<UserEntity>
    */
   async findOneById(id: string) {
-    return await this.userModel.findOne({
-      _id: id
+    return await this.userRepository.findOne({
+      where: { uuid: id }
     })
   }
 
@@ -42,14 +41,14 @@ export class AuthService {
    * @returns Repository<UserEntity>
    */
   async findOneByUsername(username: string) {
-    return await this.userModel.findOne({
-      username
+    return await this.userRepository.findOne({
+      where: { username }
     })
   }
 
   async findOneByToken(token: string) {
-    return await this.userModel.findOne({
-      _id: (await this.verifyToken(token)).payload
+    return await this.userRepository.findOne({
+      where: { uuid: (await this.verifyToken(token)).payload }
     })
   }
 
@@ -68,7 +67,7 @@ export class AuthService {
   ): Promise<void> {
     const salt = getRandom("all", 32)
 
-    await this.userModel.create({
+    await this.userRepository.save({
       username,
       password: hash(password + salt),
       salt,
@@ -94,7 +93,7 @@ export class AuthService {
     const user = await this.findOneById(uuid);
 
     if (user === null) throw new UnauthorizedException({ message: '아이디 혹은 비밀번호를 확인해주세요.' })
-    const payload = { id: user.id }
+    const payload = { id: user.uuid }
 
     return {
       success: true,
@@ -114,8 +113,8 @@ export class AuthService {
         { secret: this.configService.get("JWT_SECRET") }
       );
 
-      const user = await this.userModel.findOne({
-        _id: payload.id
+      const user = await this.userRepository.findOne({
+        where: { uuid: payload.id }
       })
 
       if (payload === null || user === null) return null;
@@ -125,5 +124,15 @@ export class AuthService {
     } catch (err) {
       return null;
     }
+  }
+
+  async findByUsersPaginationAndType(page: number, type: "master" | "user" | "admin" | "all") {
+    return await this.userRepository.find({
+      where: {
+        type: type === "all" ? undefined : type
+      },
+      skip: page * 15,
+      take: 15
+    })
   }
 }
