@@ -1,9 +1,12 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsDate, IsDateString, IsNotEmpty, IsString } from "class-validator";
-import { Column, CreateDateColumn, Entity } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'system_entity' })
 export default class SystemEntity {
+  @PrimaryGeneratedColumn('uuid')
+  uuid: string
+
   @IsNotEmpty()
   @Column({
     name: 'event_number',
