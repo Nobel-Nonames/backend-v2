@@ -9,19 +9,15 @@ import { ModelService } from './model.service';
 import FileSystem from 'src/utils/fileSystem';
 import * as path from 'path';
 import getRandom from 'src/utils/getRandom';
-import { MongooseModule } from '@nestjs/mongoose';
-import Image, { ImageSchema } from 'src/schemas/images/image.schema';
 import { SystemModule } from 'src/system/system.module';
-import Projects, { ProjectInfoSchema } from 'src/schemas/project/info.schema';
-import DeepLearns, { DeepLearnSchema } from 'src/schemas/images/deeplearn.schema';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import ImagesEntity from 'src/entitiy/images/image.entity';
+import ProjectsEntity from 'src/entitiy/project/info.entity';
+import DeepLearnsEntity from 'src/entitiy/images/deeplearn.entity';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: Image.name, schema: ImageSchema },
-      { name: Projects.name, schema: ProjectInfoSchema },
-      { name: DeepLearns.name, schema: DeepLearnSchema }
-    ]),
+    TypeOrmModule.forFeature([ImagesEntity, ProjectsEntity, DeepLearnsEntity]),
     MulterModule.registerAsync({
       imports: [AuthModule],
       inject: [AuthService],

@@ -12,6 +12,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { SystemService } from 'src/system/system.service';
 import CreateProjectDto from './dto/request/CreateProject.dto';
 import UploadImagesDto from './dto/request/UploadImages.dto';
+import ImagesEntity from 'src/entitiy/images/image.entity';
 
 @Controller('model')
 export class ModelController {
@@ -71,16 +72,17 @@ export class ModelController {
       new FileSystem().cp(value.path, join(cwd(), 'public', user.username, 'mv', `${value.originalname}`))
       new FileSystem().cp(value.path, join(cwd(), 'public', user.username, 'rst', `${filename}`))
 
-      await this.modelService.imageCreate({
-        serialFileName: `${data.SerialNumber}_${filename}`,
-        fileName: filename,
-        serialNumber: data.SerialNumber,
-        filePath: join(cwd(), 'public', user.username, 'mv', `${value.originalname}`),
-        thumnailPath: undefined,
-        dateTimeOriginal: data.DateTimeOriginal,
-        exifData: data,
-        projectInfo: project._id
-      })
+      const image = new ImagesEntity();
+      image.serialFileName = `${data.SerialNumber}_${filename}`
+      image.fileName = filename
+      image.serialNumber = data.SerialNumber
+      image.filePath = join(cwd(), 'public', user.username, 'mv', `${value.originalname}`)
+      image.thumnailPath = undefined
+      image.dateTimeOriginal = data.DateTimeOriginal
+      image.exifData = data
+      image.project = project
+
+      await this.modelService.imageCreate(image)
     })
 
     return { success: true, state }

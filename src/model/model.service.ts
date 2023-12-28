@@ -1,30 +1,33 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Document, Model } from 'mongoose';
-import DeepLearns from 'src/schemas/images/deeplearn.schema';
-import Image from 'src/schemas/images/image.schema';
-import Projects from 'src/schemas/project/info.schema';
+import { InjectRepository } from '@nestjs/typeorm';
+import UsersEntity from 'src/entitiy/auth/user.entity';
+import DeepLearnsEntity from 'src/entitiy/images/deeplearn.entity';
+import ImagesEntity from 'src/entitiy/images/image.entity';
+import ProjectsEntity from 'src/entitiy/project/info.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ModelService {
   constructor(
-    @InjectModel(Projects.name)
-    private projectModel: Model<Projects>,
-    @InjectModel(Image.name)
-    private imageModel: Model<Image>,
-    @InjectModel(DeepLearns.name)
-    private deepLearnModel: Model<DeepLearns>
+    @InjectRepository(ProjectsEntity)
+    private projectRepository: Repository<ProjectsEntity>,
+    @InjectRepository(ImagesEntity)
+    private imageRepository: Repository<ImagesEntity>,
+    @InjectRepository(DeepLearnsEntity)
+    private deepLearnRepository: Repository<DeepLearnsEntity>
   ) { };
 
-  async findOneByProjectId(_id: string) {
-    return await this.projectModel.findOne({ _id });
+  async findOneByProjectId(uuid: string) {
+    return await this.projectRepository.findOne({
+      where: { uuid }
+    });
   }
 
-  async createProject(projectName: string, address: string, user: Document) {
-    return await this.projectModel.create({
+  async createProject(projectName: string, address: string, user: UsersEntity) {
+    return await this.projectRepository.save({
       projectName,
       address,
-      UserInfo_id: user._id,
+      author: user,
       status: "Ready",
       history: [],
       etc: undefined,
@@ -33,18 +36,18 @@ export class ModelService {
   }
 
   async findByImageAll() {
-    return await this.imageModel.find();
+    return await this.imageRepository.find();
   }
 
   async findByDeepLearnAll() {
-    return await this.deepLearnModel.find();
+    return await this.deepLearnRepository.find();
   }
 
-  async imageCreate(image: Image) {
-    await this.imageModel.create(image)
+  async imageCreate(image: ImagesEntity) {
+    await this.imageRepository.save(image)
   }
 
-  async deepLearnCreate(deepLearn: DeepLearns) {
-    await this.deepLearnModel.create(deepLearn);
+  async deepLearnCreate(deepLearn: DeepLearnsEntity) {
+    await this.deepLearnRepository.save(deepLearn);
   }
 }
