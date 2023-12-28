@@ -69,4 +69,13 @@ export default class FileSystem {
       return false
     return true;
   }
+
+  public async mv(target: string, pos: string): Promise<boolean> {
+    try {
+      fs.renameSync(target, pos);
+      return true
+    } catch (error) {
+      return false
+    }
+  }
 }
