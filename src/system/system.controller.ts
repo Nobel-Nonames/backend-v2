@@ -10,6 +10,6 @@ export class SystemController {
   @Get('/evt_num')
   @HttpCode(HttpStatus.OK)
   async getEventNumber() {
-    return { success: true, num: (await this.systemService.findOneByLastData()).event_number ?? 0 }
+    return { success: true, num: await this.systemService.getLastEventNumber() ?? 0 }
   }
 }

@@ -11,11 +11,19 @@ export class SystemService {
   ) { }
 
   async findOneByLastData() {
-    return await this.systemRepository.find({
+    const [data] = await this.systemRepository.find({
       order: {
         createdAt: 'desc'
       }
-    })[0]
+    })
+
+    return data
+  }
+
+  async getLastEventNumber() {
+    const data = await this.findOneByLastData()
+
+    return data.event_number
   }
 
   async systemSave(data: SystemEntity) {
