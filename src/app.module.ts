@@ -8,23 +8,40 @@ import { AuthMiddleware } from './auth/auth.middleware';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ModelModule } from './model/model.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
+import { PythonModule } from './python/python.module';
+import UsersEntity from './entitiy/auth/user.entity';
+import ImagesEntity from './entitiy/images/image.entity';
+import DeepLearnsEntity from './entitiy/images/deeplearn.entity';
+import SystemEntity from './entitiy/system.entity';
+import ProjectsEntity from './entitiy/project/info.entity';
+import ProjectInspectEntity from './entitiy/project/inspect.schema';
 
 @Module({
   imports: [
-    MongooseModule.forRootAsync({
+    TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        uri: `mongodb://${configService.get('DATABASE_HOST')}:${configService.get('DATABASE_PORT')}`,
-        user: configService.get('DATABASE_USERNAME'),
-        pass: configService.get('DATABASE_PASSWORD')
+        type: "mysql",
+        host: configService.get('DATABASE_HOST'),
+        port: configService.get('DATABASE_PORT'),
+        username: configService.get('DATABASE_USERNAME'),
+        password: configService.get('DATABASE_PASSWORD'),
+        database: configService.get('DATABASE_SCHEMA'),
+        entities: [
+          UsersEntity, ImagesEntity, DeepLearnsEntity,
+          SystemEntity, ProjectsEntity, ProjectInspectEntity
+        ],
+        logging: configService.get<boolean>('DATABASE_LOGGING'),
+        synchronize: configService.get<boolean>('DATABASE_SYNCHRONIZE')
       })
     }),
     ConfigurationModule,
     SystemModule,
     AuthModule,
     ModelModule,
-    SchedulerModule
+    SchedulerModule,
+    PythonModule
   ]
 })
 export class AppModule implements NestModule {
