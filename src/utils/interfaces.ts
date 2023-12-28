@@ -18,3 +18,17 @@ export type MimeType =
   | 'application/xhtml+xml' | 'application/vnd.ms-excel' | 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
   | 'application/vnd.mozilla.xul+xml' | 'application/zip' | 'video/3gpp' | 'audio/3gpp' | 'video/3gpp2' | 'audio/3gpp2'
   | 'application/x-7z-compressed'
+
+export interface PythonResultPrediction {
+  best_class: string,
+  best_probability: number,
+  name: string,
+  bbox: number[]
+}
+
+export interface PythonResult {
+  file: string,
+  prediction: PythonResultPrediction,
+  annotated_filename: string,
+  mv_filename: string
+}
