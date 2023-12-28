@@ -1,4 +1,4 @@
-import { Body, Controller, Headers, HttpCode, HttpStatus, Post, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Headers, HttpCode, HttpStatus, Post, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { existsSync } from 'fs';
 import moment from 'moment';
@@ -47,6 +47,9 @@ export class ModelController {
     const user = await this.authService.findOneByToken(token);
     const project = await this.modelService.findOneByProjectId(dto.project_id);
 
+    if (!project)
+      throw new ForbiddenException({ success: false, message: '올바른 project_id 값을 넣어주세요.' })
+
     let state = {
       success: 0,
       duplicate: 0,
@@ -69,7 +72,7 @@ export class ModelController {
 
       const extension = extname(value.originalname);
       const filename = `${moment(data.DateTimeOriginal).format("YYYYMMDD-HHmmss")}${(data.Sequence as string).replace(/\s/gi, '')}.${extension}`;
-      new FileSystem().cp(value.path, join(cwd(), 'public', user.username, 'mv', `${value.originalname}`))
+      new FileSystem().mv(value.path, join(cwd(), 'public', user.username, 'mv', `${value.originalname}`))
       new FileSystem().cp(value.path, join(cwd(), 'public', user.username, 'rst', `${filename}`))
 
       const image = new ImagesEntity();
