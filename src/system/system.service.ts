@@ -1,29 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Document, Model } from 'mongoose';
-import Systems from 'src/schemas/system.schema';
+import { InjectRepository } from '@nestjs/typeorm';
+import SystemEntity from 'src/entitiy/system.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class SystemService {
   constructor(
-    @InjectModel(Systems.name)
-    private systemModel: Model<Systems>,
+    @InjectRepository(SystemEntity)
+    private systemRepository: Repository<SystemEntity>,
   ) { }
 
   async findOneByLastData() {
-    return this.systemModel.findOne({
-      lastData: {
-        $exists: true,
-      },
-    }).sort({ lastData: -1 })
+    return await this.systemRepository.find({
+      order: {
+        createdAt: 'desc'
+      }
+    })[0]
   }
 
-  async systemDocSave(data: Document) {
-    await data.save();
+  async systemSave(data: SystemEntity) {
+    await this.systemRepository.save(data);
     return
-  }
-
-  async systemCreate(data: Systems) {
-    await this.systemModel.create(data);
   }
 }

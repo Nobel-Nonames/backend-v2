@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { SystemController } from './system.controller';
 import { SystemService } from './system.service';
-import { MongooseModule } from '@nestjs/mongoose';
-import Systems, { SystemSchema } from 'src/schemas/system.schema';
+import SystemEntity from 'src/entitiy/system.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Systems.name, schema: SystemSchema }]),
+    TypeOrmModule.forFeature([SystemEntity])
   ],
   exports: [SystemService],
   controllers: [SystemController],
