@@ -12,12 +12,12 @@ import getRandom from 'src/utils/getRandom';
 import { SystemModule } from 'src/system/system.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import ImagesEntity from 'src/entitiy/images/image.entity';
-import ProjectsEntity from 'src/entitiy/project/info.entity';
-import DeepLearnsEntity from 'src/entitiy/images/deeplearn.entity';
+import { PythonModule } from 'src/python/python.module';
+import { ProjectModule } from 'src/project/project.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ImagesEntity, ProjectsEntity, DeepLearnsEntity]),
+    TypeOrmModule.forFeature([ImagesEntity]),
     MulterModule.registerAsync({
       imports: [AuthModule],
       inject: [AuthService],
@@ -64,7 +64,9 @@ import DeepLearnsEntity from 'src/entitiy/images/deeplearn.entity';
       })
     }),
     AuthModule,
-    SystemModule
+    SystemModule,
+    PythonModule,
+    ProjectModule
   ],
   controllers: [ModelController],
   providers: [ModelService]

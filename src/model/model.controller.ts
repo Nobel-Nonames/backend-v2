@@ -10,31 +10,20 @@ import child from 'child_process'
 import { ModelService } from './model.service';
 import { AuthService } from 'src/auth/auth.service';
 import { SystemService } from 'src/system/system.service';
-import CreateProjectDto from './dto/request/CreateProject.dto';
 import UploadImagesDto from './dto/request/UploadImages.dto';
 import ImagesEntity from 'src/entitiy/images/image.entity';
+import { PythonService } from 'src/python/python.service';
+import { ProjectService } from 'src/project/project.service';
 
 @Controller('model')
 export class ModelController {
   constructor(
     private readonly authService: AuthService,
     private readonly modelService: ModelService,
-    private readonly systemService: SystemService
+    private readonly systemService: SystemService,
+    private readonly pythonService: PythonService,
+    private readonly projectService: ProjectService
   ) { }
-
-  @Post('/project/create')
-  @UseGuards(AuthGuard)
-  @HttpCode(HttpStatus.CREATED)
-  async createProject(
-    @Headers("Authorization") token: string,
-    @Body() dto: CreateProjectDto
-  ) {
-    const user = await this.authService.findOneByToken(token);
-
-    await this.modelService.createProject(dto.name, dto.address, user)
-    return { success: true }
-  }
-
   @Post('/upload')
   @UseInterceptors(FilesInterceptor('files'))
   @UseGuards(AuthGuard)
@@ -45,8 +34,9 @@ export class ModelController {
     @UploadedFiles() files: Express.Multer.File[]
   ) {
     const user = await this.authService.findOneByToken(token);
-    const project = await this.modelService.findOneByProjectId(dto.project_id);
-
+    const project = await this.projectService.findOneByUuid(dto.project_id);
+    project.status = "Uploading";
+    await this.projectService.projectSave(project)
     if (!project)
       throw new ForbiddenException({ success: false, message: '올바른 project_id 값을 넣어주세요.' })
 
@@ -85,9 +75,50 @@ export class ModelController {
       image.exifData = data
       image.project = project
 
-      await this.modelService.imageCreate(image)
+      project.status = "Analyzing"
+      await this.modelService.imageCreate(image);
+      await this.projectService.projectSave(project);
     })
 
-    return { success: true, state }
+    const python_res = await this.pythonService.runWildDetector({
+      inputDir: join(cwd(), 'public', 'mv')
+    })
+
+    python_res.map(async (value) => {
+      const file = await this.modelService.findOneByPath(value.file);
+
+      if (value.prediction.length > 1) {
+        value.prediction = value.prediction.sort((a, b) => {
+          if (a === null) {
+            return 1;
+          } else if (b === null) {
+            return -1;
+          } else {
+            return a.best_probability > b.best_probability ? -1 : a.best_probability < b.best_probability ? 1 : 0;
+          }
+        })
+      }
+
+      file.count = value.prediction.length;
+
+      file.bestClass = value.prediction[0].best_class;
+      file.bestprob = value.prediction[0].best_probability;
+      file.thumnailPath = value.file;
+      project.thumnailPath = value.file;
+      file.evtNum = await this.systemService.getLastEventNumber() ?? 0
+      file.evtDate = new Date()
+      file.className = PythonService.class_name_array[+value.prediction[0].best_class]
+      file.x1 = value.prediction[0].bbox[0]
+      file.y1 = value.prediction[0].bbox[1]
+      file.x2 = value.prediction[0].bbox[2]
+      file.y2 = value.prediction[0].bbox[3]
+      await this.modelService.imageCreate(file);
+      await this.projectService.projectSave(project);
+    })
+
+    project.status = "finish";
+    await this.projectService.projectSave(project);
+
+    return { success: true, state };
   }
 }
