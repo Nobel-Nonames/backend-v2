@@ -10,11 +10,12 @@ process.on('uncaughtException', (err) => {
 @Injectable()
 export class PythonService {
   static dlexecpath = path.join(process.cwd(), 'src', 'python', 'wild_detector.py')
+  static class_name_array = ['badger', 'bird', 'boar', 'cat', 'dog', 'leopard_cat', 'marten', 'rabbit', 'raccoon', 'roe_deer', 'water_deer', 'weasel']
 
   public runWildDetector(options: {
     inputDir: string;
-  }): Promise<PythonResult> {
-    const command = `python3 wild_detector.py 
+  }): Promise<PythonResult[]> {
+    const command = `python3 ${PythonService.dlexecpath} 
         --input_dir ${options.inputDir}`
 
     // ex: python3 wild_detector.py --input_dir ./public/tmp/{user.username}/mv
@@ -26,7 +27,7 @@ export class PythonService {
         }
 
         try {
-          const result: PythonResult = JSON.parse(stdout);
+          const result: PythonResult[] = JSON.parse(stdout);
           resolve(result);
         } catch (parseError) {
           reject(parseError);
