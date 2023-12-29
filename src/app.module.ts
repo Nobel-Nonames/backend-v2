@@ -5,16 +5,14 @@ import { ConfigurationModule } from './configuration/configuration.module';
 import { SystemModule } from './system/system.module';
 import { AuthModule } from './auth/auth.module';
 import { AuthMiddleware } from './auth/auth.middleware';
-import { MongooseModule } from '@nestjs/mongoose';
 import { ModelModule } from './model/model.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
 import { PythonModule } from './python/python.module';
+import { ProjectModule } from './project/project.module';
 import UsersEntity from './entitiy/auth/user.entity';
 import ImagesEntity from './entitiy/images/image.entity';
-import DeepLearnsEntity from './entitiy/images/deeplearn.entity';
 import SystemEntity from './entitiy/system.entity';
 import ProjectsEntity from './entitiy/project/info.entity';
-import ProjectInspectEntity from './entitiy/project/inspect.schema';
 
 @Module({
   imports: [
@@ -29,8 +27,8 @@ import ProjectInspectEntity from './entitiy/project/inspect.schema';
         password: configService.get('DATABASE_PASSWORD'),
         database: configService.get('DATABASE_SCHEMA'),
         entities: [
-          UsersEntity, ImagesEntity, DeepLearnsEntity,
-          SystemEntity, ProjectsEntity, ProjectInspectEntity
+          UsersEntity, ImagesEntity,
+          SystemEntity, ProjectsEntity
         ],
         logging: configService.get<boolean>('DATABASE_LOGGING'),
         synchronize: configService.get<boolean>('DATABASE_SYNCHRONIZE')
@@ -41,7 +39,8 @@ import ProjectInspectEntity from './entitiy/project/inspect.schema';
     AuthModule,
     ModelModule,
     SchedulerModule,
-    PythonModule
+    PythonModule,
+    ProjectModule
   ]
 })
 export class AppModule implements NestModule {
