@@ -51,7 +51,7 @@ export default class ImagesEntity {
 
   @Column({
     name: 'x1',
-    type: 'int',
+    type: 'double',
     nullable: true,
     default: -1
   })
