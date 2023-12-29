@@ -12,11 +12,11 @@ export default class GetUsersResponseDto {
   success: boolean
 
   @IsArray()
-  @IsJSON()
   @IsNotEmpty()
   @ApiProperty({
-    example: [new UsersEntity()],
+    example: UsersEntity,
+    isArray: true,
     description: '유저들 정보'
   })
-  users: any
+  users: UsersEntity[]
 }

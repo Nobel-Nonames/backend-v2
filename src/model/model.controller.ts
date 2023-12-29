@@ -1,4 +1,4 @@
-import { Body, Controller, ForbiddenException, Headers, HttpCode, HttpStatus, Post, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Headers, HttpCode, HttpStatus, Post, Put, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { existsSync } from 'fs';
 import moment from 'moment';
@@ -14,6 +14,9 @@ import UploadImagesDto from './dto/request/UploadImages.dto';
 import ImagesEntity from 'src/entitiy/images/image.entity';
 import { PythonService } from 'src/python/python.service';
 import { ProjectService } from 'src/project/project.service';
+import InspectRequestDto from './dto/request/InspectRequest.dto';
+import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import SuccessResponseDto from 'src/dto/success.dto';
 
 @Controller('model')
 export class ModelController {
@@ -28,6 +31,7 @@ export class ModelController {
   @UseInterceptors(FilesInterceptor('files'))
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: "이미지 업로드", description: "이미지 업로드 합니다. (인공지능도 돌아감)" })
   async uploadFile(
     @Headers("Authorization") token: string,
     @Body() dto: UploadImagesDto,
@@ -120,5 +124,16 @@ export class ModelController {
     await this.projectService.projectSave(project);
 
     return { success: true, state };
+  }
+
+  @Put('/inspect')
+  @ApiOperation({ summary: "이미지 검수", description: "이미지 검수 합니다." })
+  @UseGuards(AuthGuard)
+  @ApiOkResponse({ description: "success", type: SuccessResponseDto })
+  @HttpCode(HttpStatus.OK)
+  async inspect(
+    @Body() dto: InspectRequestDto
+  ) {
+
   }
 }

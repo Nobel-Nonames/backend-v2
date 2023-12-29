@@ -4,6 +4,8 @@ import { ProjectService } from './project.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import CreateProjectDto from './dto/CreateProject.dto';
 import ProjectsEntity from 'src/entitiy/project/info.entity';
+import { ApiCreatedResponse, ApiOperation } from '@nestjs/swagger';
+import SuccessResponseDto from 'src/dto/success.dto';
 
 @Controller('project')
 export class ProjectController {
@@ -15,6 +17,8 @@ export class ProjectController {
   @Post('/project/create')
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({})
+  @ApiCreatedResponse({ description: "success", type: SuccessResponseDto })
   async createProject(
     @Headers("Authorization") token: string,
     @Body() dto: CreateProjectDto
