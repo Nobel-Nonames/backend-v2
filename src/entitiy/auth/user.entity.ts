@@ -100,9 +100,7 @@ export default class UsersEntity {
   })
   @Column({
     name: 'createdAt',
-    type: 'timestamp',
-    nullable: false,
-    default: new Date()
+    nullable: false
   })
   createdAt: Date;
 }
