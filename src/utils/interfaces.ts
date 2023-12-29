@@ -28,7 +28,7 @@ export interface PythonResultPrediction {
 
 export interface PythonResult {
   file: string,
-  prediction: PythonResultPrediction,
+  prediction: PythonResultPrediction[],
   annotated_filename: string,
   mv_filename: string
 }
