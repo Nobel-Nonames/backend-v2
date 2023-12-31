@@ -10,7 +10,7 @@ import { AuthGuard } from './auth.guard';
 import GetUsersResponseDto from './dto/response/GetUsersResponse.dto';
 import GetUsersRequestDto from './dto/request/GetUsersRequest.dto';
 import GetUserResponseDto from './dto/response/GetUserResponse.dto';
-import GetUserRequestDto from './dto/request/GetUserRequest.dto';
+import TargetDto from 'src/dto/target.dto';
 
 @Controller('auth')
 @ApiTags('유저 API')
@@ -75,7 +75,7 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   async getUser(
-    @Query() dto: GetUserRequestDto,
+    @Query() dto: TargetDto,
     @Headers("Authorization") token: string
   ) {
     const verify = await this.authService.verifyToken(token);
@@ -85,7 +85,7 @@ export class AuthController {
     if (me.type === "user")
       throw new UnauthorizedException({ success: false, message: 'user 권한의 유저는 다른 유저의 정보를 확인할 수 없습니다.' })
 
-    const user = await this.authService.findOneById(dto.uuid)
+    const user = await this.authService.findOneById(dto.target)
     const format = {
       ...user,
       password: undefined,
