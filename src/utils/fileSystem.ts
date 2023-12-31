@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path'
 import { MimeType } from './interfaces';
+import * as crypto from 'crypto';
 
 type FileExitsAction = "Ignore" | "Error"
 
@@ -77,5 +78,25 @@ export default class FileSystem {
     } catch (error) {
       return false
     }
+  }
+
+  public async getHash(target: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const hash = crypto.createHash('sha256');
+      const stream = fs.createReadStream(target);
+
+      stream.on('data', (data) => {
+        hash.update(data);
+      });
+
+      stream.on('end', () => {
+        const fileHash = hash.digest('hex');
+        resolve(fileHash);
+      });
+
+      stream.on('error', (error) => {
+        reject(error);
+      });
+    });
   }
 }
