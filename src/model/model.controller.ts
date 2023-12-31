@@ -45,24 +45,31 @@ export class ModelController {
       throw new ForbiddenException({ success: false, message: '올바른 project_id 값을 넣어주세요.' })
 
     let state = {
-      success: 0,
       duplicate: 0,
       undefined: 0,
-      error: 0
     };
+
+    let history = {
+      duplicate: [],
+      undefined: [],
+    }
 
     files.map(async (value) => {
       const data = JSON.parse(child.execSync('exiftool -j -b ' + value.path) as unknown as string)[0];
 
       if (!data) {
         state.undefined += 1;
+        history.undefined.push(value)
         return value
       }
 
-      if (existsSync(process.cwd() + value.path)) {
-        state.duplicate += 1;
-        return value
-      }
+      files.map((map) => {
+        if (new FileSystem().getHash(map.path) === new FileSystem().getHash(value.path)) {
+          state.duplicate += 1;
+          history.duplicate.push(value)
+          return value
+        }
+      })
 
       const extension = extname(value.originalname);
       const filename = `${moment(data.DateTimeOriginal).format("YYYYMMDD-HHmmss")}${(data.Sequence as string).replace(/\s/gi, '')}.${extension}`;
@@ -73,14 +80,13 @@ export class ModelController {
       image.serialFileName = `${data.SerialNumber}_${filename}`
       image.fileName = filename
       image.serialNumber = data.SerialNumber
-      image.filePath = join(cwd(), 'public', user.username, 'mv', `${value.originalname}`)
-      image.thumnailPath = undefined
+      image.filePath = join(cwd(), 'public', user.username, 'rst', filename)
       image.dateTimeOriginal = data.DateTimeOriginal
       image.exifData = data
       image.project = project
 
       project.status = "Analyzing"
-      await this.modelService.imageCreate(image);
+      await this.modelService.imageSave(image);
       await this.projectService.projectSave(project);
     })
 
@@ -107,8 +113,7 @@ export class ModelController {
 
       file.bestClass = value.prediction[0].best_class;
       file.bestprob = value.prediction[0].best_probability;
-      file.thumnailPath = value.file;
-      project.thumnailPath = value.file;
+      project.ThumnailImage = file;
       file.evtNum = await this.systemService.getLastEventNumber() ?? 0
       file.evtDate = new Date()
       file.className = PythonService.class_name_array[+value.prediction[0].best_class]
@@ -116,14 +121,14 @@ export class ModelController {
       file.y1 = value.prediction[0].bbox[1]
       file.x2 = value.prediction[0].bbox[2]
       file.y2 = value.prediction[0].bbox[3]
-      await this.modelService.imageCreate(file);
+      await this.modelService.imageSave(file);
       await this.projectService.projectSave(project);
     })
 
     project.status = "finish";
     await this.projectService.projectSave(project);
 
-    return { success: true, state };
+    return { success: true, state, history };
   }
 
   @Put('/inspect')
@@ -134,6 +139,15 @@ export class ModelController {
   async inspect(
     @Body() dto: InspectRequestDto
   ) {
+    const file = await this.modelService.findOneByUuid(dto.uuid);
 
+    file.modifyFlag = true
+    file.searchFlag = true
+    file.bestClass = String(dto.class)
+    file.className = PythonService.class_name_array[dto.class]
+
+    this.modelService.imageSave(file);
+
+    return { success: true, file }
   }
 }
