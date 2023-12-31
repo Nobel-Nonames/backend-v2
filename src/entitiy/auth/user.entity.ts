@@ -78,18 +78,6 @@ export default class UsersEntity {
   })
   salt: string;
 
-  @IsNotEmpty()
-  @Column({
-    name: 'ETC',
-    type: 'json',
-    nullable: true
-  })
-  @ApiProperty({
-    example: {},
-    description: '그 외 기타 정보'
-  })
-  etc: any;
-
   @IsDate()
   @IsString()
   @IsNotEmpty()

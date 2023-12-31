@@ -1,13 +1,25 @@
-import { IsDate, IsDateString, IsNotEmpty, IsString } from "class-validator";
+import { IsDate, IsDateString, IsNotEmpty, IsString, MaxLength } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import UsersEntity from "../auth/user.entity";
+import ImagesEntity from "../images/image.entity";
 
 @Entity({ name: 'projects_entity' })
 export default class ProjectsEntity {
+  @ApiProperty({
+    description: "project uuid",
+    example: "..."
+  })
   @PrimaryGeneratedColumn('uuid')
   uuid: string
 
+  @ApiProperty({
+    description: "프로젝트 이름 최대 28자",
+    example: "..."
+  })
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(28)
   @Column({
     name: 'ProjectName',
     nullable: false,
@@ -16,6 +28,10 @@ export default class ProjectsEntity {
   })
   projectName: string;
 
+  @ApiProperty({
+    description: "프로젝트 현재 스테이터스",
+    example: `["Ready", "Uploading", "Upload End", "Analyzing", "finish"]`
+  })
   @Column({
     name: 'Status',
     type: 'enum',
@@ -25,17 +41,18 @@ export default class ProjectsEntity {
   })
   status: "Ready" | "Uploading" | "Upload End" | "Analyzing" | "finish";
 
+  @ApiProperty({
+    description: "프로젝트 만든 사람",
+    example: UsersEntity
+  })
   @ManyToOne(() => UsersEntity, { nullable: false })
   @JoinColumn({ name: 'author', referencedColumnName: 'uuid' })
   author: UsersEntity;
 
-  @Column({
-    name: 'history',
-    type: 'text',
-    nullable: false
+  @ApiProperty({
+    description: "이미지 위치",
+    example: "..."
   })
-  history: string;
-
   @Column({
     name: 'Address',
     type: 'text',  // or adjust the type based on your requirements
@@ -43,12 +60,13 @@ export default class ProjectsEntity {
   })
   address: string;
 
-  @Column({
-    name: 'ThumnailPath',
-    type: 'text',
-    nullable: true
+  @ApiProperty({
+    description: "썸네일 이미지",
+    example: "..."
   })
-  thumnailPath?: string;
+  @ManyToOne(() => ImagesEntity, { nullable: true })
+  @JoinColumn({ name: 'ThumnailImage', referencedColumnName: 'uuid' })
+  ThumnailImage?: ImagesEntity;
 
   @IsDate()
   @IsString()
@@ -63,12 +81,4 @@ export default class ProjectsEntity {
     nullable: false
   })
   createdAt: Date;
-
-  @IsNotEmpty()
-  @Column({
-    name: 'ETC',
-    type: 'text',
-    nullable: false
-  })
-  etc: string;
 }

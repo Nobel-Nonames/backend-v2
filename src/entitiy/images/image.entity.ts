@@ -1,12 +1,21 @@
 import mongoose, { Document, HydratedDocument } from "mongoose";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import ProjectsEntity from "../project/info.entity";
+import { ApiProperty } from "@nestjs/swagger";
 
 @Entity({ name: 'images_entity' })
 export default class ImagesEntity {
+  @ApiProperty({
+    example: '...',
+    description: "이미지 uuid"
+  })
   @PrimaryGeneratedColumn('uuid')
   uuid: string
 
+  @ApiProperty({
+    example: '...',
+    description: "시리얼 파일 네임"
+  })
   @Column({
     name: 'serial_filename',
     type: 'text',
@@ -14,6 +23,10 @@ export default class ImagesEntity {
   })
   serialFileName: string;
 
+  @ApiProperty({
+    example: '...',
+    description: "파일 이름"
+  })
   @Column({
     name: 'FileName',
     type: 'text',
@@ -21,6 +34,10 @@ export default class ImagesEntity {
   })
   fileName: string;
 
+  @ApiProperty({
+    example: '...',
+    description: "파일 위치"
+  })
   @Column({
     name: 'FilePath',
     type: 'text',
@@ -28,13 +45,10 @@ export default class ImagesEntity {
   })
   filePath: string;
 
-  @Column({
-    name: 'ThumnailPath',
-    type: 'text',
-    nullable: false
+  @ApiProperty({
+    example: '...',
+    description: "파일 시리얼 넘버"
   })
-  thumnailPath: string;
-
   @Column({
     name: 'SerialNumber',
     type: 'text',
@@ -42,6 +56,10 @@ export default class ImagesEntity {
   })
   serialNumber: string;
 
+  @ApiProperty({
+    example: '...',
+    description: "오리지널 이미지 저장날짜"
+  })
   @Column({
     name: 'DateTimeOriginal',
     nullable: false,
@@ -49,6 +67,10 @@ export default class ImagesEntity {
   })
   dateTimeOriginal: Date;
 
+  @ApiProperty({
+    example: '...',
+    description: "분석 후 표시해야할 박스 위치"
+  })
   @Column({
     name: 'x1',
     type: 'double',
@@ -57,6 +79,10 @@ export default class ImagesEntity {
   })
   x1: number;
 
+  @ApiProperty({
+    example: '...',
+    description: "분석 후 표시해야할 박스 위치"
+  })
   @Column({
     name: 'y1',
     type: 'double',
@@ -65,6 +91,10 @@ export default class ImagesEntity {
   })
   y1: number;
 
+  @ApiProperty({
+    example: '...',
+    description: "분석 후 표시해야할 박스 위치"
+  })
   @Column({
     name: 'x2',
     type: 'double',
@@ -73,6 +103,10 @@ export default class ImagesEntity {
   })
   x2: number;
 
+  @ApiProperty({
+    example: '...',
+    description: "분석 후 표시해야할 박스 위치"
+  })
   @Column({
     name: 'y2',
     type: 'double',
@@ -81,6 +115,10 @@ export default class ImagesEntity {
   })
   y2: number;
 
+  @ApiProperty({
+    example: '...',
+    description: "exif 분석 후 나온 데이터"
+  })
   @Column({
     name: 'ExifData',
     type: 'json',
@@ -88,6 +126,10 @@ export default class ImagesEntity {
   })
   exifData: any;
 
+  @ApiProperty({
+    example: '...',
+    description: "프로젝트"
+  })
   @ManyToOne(() => ProjectsEntity, { nullable: false })
   @JoinColumn({ name: 'project', referencedColumnName: 'uuid' })
   project: ProjectsEntity;
@@ -99,6 +141,10 @@ export default class ImagesEntity {
   })
   bestClass?: string;
 
+  @ApiProperty({
+    example: 0,
+    description: "이벤트 넘버"
+  })
   @Column({
     name: 'evtnum',
     type: 'int',
@@ -107,6 +153,10 @@ export default class ImagesEntity {
   })
   evtNum: number;
 
+  @ApiProperty({
+    example: '...',
+    description: "이벤트 기반 저장 날짜"
+  })
   @Column({
     name: 'evtDate',
     type: 'timestamp',
@@ -114,29 +164,10 @@ export default class ImagesEntity {
   })
   evtDate: Date;
 
-  @Column({
-    name: 'update_classname',
-    type: 'double',
-    nullable: true,
-    default: -1
+  @ApiProperty({
+    example: '...',
+    description: "검수 했는지 안했는지"
   })
-  updateClass: number;
-
-  @Column({
-    name: 'update_count',
-    type: 'int',
-    nullable: true,
-    default: -1
-  })
-  updateCount: number;
-
-  // @Prop({
-  //   name: 'highlighted',
-  //   type: mongoose.Schema.Types.Boolean,
-  //   default: false
-  // })
-  // highlighted: Boolean;
-
   @Column({
     name: 'modifyFlag',
     type: 'boolean',
@@ -144,20 +175,21 @@ export default class ImagesEntity {
   })
   modifyFlag: Boolean;
 
+  @ApiProperty({
+    example: '...',
+    description: "권한\"유저\"에서 볼 수 있는지"
+  })
   @Column({
     name: 'searchFlag',
-    type: 'boolean',
+    type: 'bool',
     default: false
   })
   searchFlag: Boolean;
 
-  @Column({
-    name: 'updateFlag',
-    type: 'boolean',
-    default: false
+  @ApiProperty({
+    example: '...',
+    description: "인공지능을 돌렸을 때 확률이 가장 높은 동물의 %"
   })
-  updateFlag: Boolean;
-
   @Column({
     name: 'bestprob',
     type: 'int',
@@ -165,6 +197,10 @@ export default class ImagesEntity {
   })
   bestprob: number;
 
+  @ApiProperty({
+    example: '...',
+    description: "인공지능을 돌렸을 때 확률이 가장 높은 동물"
+  })
   @Column({
     name: 'ClassName',
     type: 'text',
@@ -172,6 +208,10 @@ export default class ImagesEntity {
   })
   className: string;
 
+  @ApiProperty({
+    example: '...',
+    description: "인공지능을 돌렸을 때 동물이 몇마리나 있을지"
+  })
   @Column({
     name: 'Count',
     type: 'int',
