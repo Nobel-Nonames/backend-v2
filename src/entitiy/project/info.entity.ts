@@ -62,7 +62,7 @@ export default class ProjectsEntity {
 
   @ApiProperty({
     description: "썸네일 이미지",
-    example: "..."
+    type: () => ImagesEntity
   })
   @ManyToOne(() => ImagesEntity, { nullable: true })
   @JoinColumn({ name: 'ThumnailImage', referencedColumnName: 'uuid' })

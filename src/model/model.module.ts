@@ -68,6 +68,7 @@ import { ProjectModule } from 'src/project/project.module';
     PythonModule,
     ProjectModule
   ],
+  exports: [ModelService],
   controllers: [ModelController],
   providers: [ModelService]
 })
