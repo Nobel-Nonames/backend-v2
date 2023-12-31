@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsArray, IsBoolean, IsJSON, IsNotEmpty } from "class-validator";
-import UsersEntity from "src/entitiy/auth/user.entity";
+import UsersEntity from "src/entities/auth/user.entity";
 
 export default class GetUsersResponseDto {
   @IsBoolean()

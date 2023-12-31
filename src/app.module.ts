@@ -9,10 +9,10 @@ import { ModelModule } from './model/model.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
 import { PythonModule } from './python/python.module';
 import { ProjectModule } from './project/project.module';
-import UsersEntity from './entitiy/auth/user.entity';
-import ImagesEntity from './entitiy/images/image.entity';
-import SystemEntity from './entitiy/system.entity';
-import ProjectsEntity from './entitiy/project/info.entity';
+import UsersEntity from './entities/auth/user.entity';
+import ImagesEntity from './entities/images/image.entity';
+import SystemEntity from './entities/system.entity';
+import ProjectsEntity from './entities/project/info.entity';
 
 @Module({
   imports: [

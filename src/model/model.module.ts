@@ -11,7 +11,7 @@ import * as path from 'path';
 import getRandom from 'src/utils/getRandom';
 import { SystemModule } from 'src/system/system.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import ImagesEntity from 'src/entitiy/images/image.entity';
+import ImagesEntity from 'src/entities/images/image.entity';
 import { PythonModule } from 'src/python/python.module';
 import { ProjectModule } from 'src/project/project.module';
 

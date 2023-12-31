@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { SystemController } from './system.controller';
 import { SystemService } from './system.service';
-import SystemEntity from 'src/entitiy/system.entity';
+import SystemEntity from 'src/entities/system.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({

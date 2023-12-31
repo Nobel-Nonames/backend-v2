@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import ProjectsEntity from "src/entitiy/project/info.entity";
+import ProjectsEntity from "src/entities/project/info.entity";
 
 export default class GetProjectResponseDto {
   @ApiProperty({

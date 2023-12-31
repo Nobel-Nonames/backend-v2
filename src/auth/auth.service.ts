@@ -5,7 +5,7 @@ import hash from 'src/utils/hash';
 import { ConfigService } from '@nestjs/config';
 import fileSystem from 'src/utils/fileSystem';
 import { InjectRepository } from '@nestjs/typeorm';
-import UsersEntity from 'src/entitiy/auth/user.entity';
+import UsersEntity from 'src/entities/auth/user.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()

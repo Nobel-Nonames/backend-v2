@@ -3,7 +3,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { ProjectService } from './project.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import CreateProjectDto from './dto/request/CreateProject.dto';
-import ProjectsEntity from 'src/entitiy/project/info.entity';
+import ProjectsEntity from 'src/entities/project/info.entity';
 import { ApiCreatedResponse, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import SuccessResponseDto from 'src/dto/success.dto';
 import GetProjectsRequestDto from '../dto/GetByPageination.dto';

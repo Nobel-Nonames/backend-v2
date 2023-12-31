@@ -11,7 +11,7 @@ import { ModelService } from './model.service';
 import { AuthService } from 'src/auth/auth.service';
 import { SystemService } from 'src/system/system.service';
 import UploadImagesDto from './dto/request/UploadImages.dto';
-import ImagesEntity from 'src/entitiy/images/image.entity';
+import ImagesEntity from 'src/entities/images/image.entity';
 import { PythonService } from 'src/python/python.service';
 import { ProjectService } from 'src/project/project.service';
 import InspectRequestDto from './dto/request/InspectRequest.dto';

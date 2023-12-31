@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import ImagesEntity from "src/entitiy/images/image.entity";
+import ImagesEntity from "src/entities/images/image.entity";
 
 export default class GetProjectByImagesDto {
   @ApiProperty({
