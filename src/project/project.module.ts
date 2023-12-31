@@ -4,11 +4,13 @@ import { ProjectService } from './project.service';
 import { ProjectController } from './project.controller';
 import ProjectsEntity from 'src/entitiy/project/info.entity';
 import { AuthModule } from 'src/auth/auth.module';
+import { ModelModule } from 'src/model/model.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ProjectsEntity]),
-    AuthModule
+    AuthModule,
+    ModelModule
   ],
   providers: [ProjectService],
   exports: [ProjectService],

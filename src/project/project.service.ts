@@ -7,7 +7,7 @@ import { Repository } from 'typeorm';
 export class ProjectService {
   constructor(
     @InjectRepository(ProjectsEntity)
-    private projectRepository: Repository<ProjectsEntity>
+    private projectRepository: Repository<ProjectsEntity>,
   ) { }
 
   async projectSave(data: ProjectsEntity) {
@@ -19,6 +19,16 @@ export class ProjectService {
       where: {
         uuid
       }
+    })
+  }
+
+  async findByPagination(page: number) {
+    return await this.projectRepository.find({
+      order: {
+        createdAt: 'DESC'
+      },
+      take: 15,
+      skip: page * 15
     })
   }
 }
