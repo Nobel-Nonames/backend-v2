@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsDate, IsDateString, IsEnum, IsNotEmpty, IsString, IsUUID } from "class-validator";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'users_entity' })
 export default class UsersEntity {
@@ -86,7 +86,7 @@ export default class UsersEntity {
     example: "2023-11-29 20:14:29.234751",
     description: "유저 가입 시간"
   })
-  @Column({
+  @CreateDateColumn({
     name: 'createdAt',
     nullable: false
   })
