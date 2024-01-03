@@ -31,7 +31,7 @@ export class ModelController {
   @UseInterceptors(FilesInterceptor('files'))
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: "이미지 업로드", description: "이미지 업로드 합니다. (인공지능도 돌아감)" })
+  @ApiOperation({ summary: "이미지 업로드", description: "이미지 업로드 합니다. (인공지능도 돌아감) FormData로 요청해야함" })
   async uploadFile(
     @Headers("Authorization") token: string,
     @Body() dto: UploadImagesDto,

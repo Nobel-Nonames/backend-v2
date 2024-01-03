@@ -13,5 +13,5 @@ export default class GetProjectsResponseDto {
     example: ProjectsEntity,
     isArray: true
   })
-  projects: ProjectsEntity[]
+  projects: ProjectsEntity
 }

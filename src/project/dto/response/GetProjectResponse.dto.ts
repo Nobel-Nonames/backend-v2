@@ -10,7 +10,7 @@ export default class GetProjectResponseDto {
 
   @ApiProperty({
     description: "project",
-    example: ProjectsEntity,
+    example: ProjectsEntity
   })
   project: ProjectsEntity
 }

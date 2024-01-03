@@ -13,5 +13,5 @@ export default class GetProjectByImagesDto {
     isArray: true,
     description: "이미지 리스트"
   })
-  images: ImagesEntity[]
+  images: ImagesEntity
 }

@@ -13,6 +13,7 @@ import { Response } from 'express';
 import TargetDto from 'src/dto/target.dto';
 import GetByPageinationDto from '../dto/GetByPageination.dto';
 import GetProjectByImagesDto from './dto/response/GetProjectByImages.dto';
+import GetProjectsResponseDto from './dto/response/GetProjects.dto';
 
 @Controller('project')
 export class ProjectController {
@@ -51,7 +52,7 @@ export class ProjectController {
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "프로젝트 가져오기", description: "프로젝트\"들\"을 가져옵니다." })
-  @ApiOkResponse({ description: "success", type: GetByPageinationDto })
+  @ApiOkResponse({ description: "success", type: GetProjectsResponseDto })
   async asyncGetProjects(
     @Query() dto: GetProjectsRequestDto
   ) {

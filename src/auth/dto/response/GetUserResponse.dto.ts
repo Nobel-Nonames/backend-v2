@@ -11,8 +11,8 @@ export default class GetUserResponseDto {
   @IsJSON()
   @IsNotEmpty()
   @ApiProperty({
-    example: new UsersEntity(),
+    example: UsersEntity,
     description: '유저 정보'
   })
-  users: any
+  users: UsersEntity
 }

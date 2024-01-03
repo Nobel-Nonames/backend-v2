@@ -18,5 +18,5 @@ export default class GetUsersResponseDto {
     isArray: true,
     description: '유저들 정보'
   })
-  users: UsersEntity[]
+  users: UsersEntity
 }
